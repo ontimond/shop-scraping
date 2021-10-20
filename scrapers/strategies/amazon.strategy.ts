@@ -1,6 +1,6 @@
 import ShopItem from "../../interfaces/shop-item";
 import { ScrapingStrategy } from "../../interfaces/scraping-strategy";
-import apifyCli from "../utils/apify-sdk.cli";
+import { getApifyClient } from "../utils/apify-sdk.cli";
 
 /**
  * Amazon strategy
@@ -21,6 +21,7 @@ class AmazonStrategy implements ScrapingStrategy {
     }
 
     async runApifyAmazon(url: string): Promise<any> {
+        const apifyCli = getApifyClient();
         const run = await apifyCli.actor('vaclavrut/Amazon-crawler').call(this.createApifyAmazonInput(url));
         const { items } = await apifyCli.dataset(run.defaultDatasetId).listItems();
         return items;
