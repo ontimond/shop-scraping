@@ -1,13 +1,13 @@
 import ShopItem from "../../interfaces/shop-item";
 import { ScrapingStrategy } from "../../interfaces/scraping-strategy";
-import ApifyApi from "../utils/apify.api";
+import apifyCli from "../utils/apify-sdk.cli";
 
 /**
  * Aliexpress strategy
  */
 class AliexpressStrategy implements ScrapingStrategy {
 
-    name: string = 'apify-aliexpress:api';
+    name: string = 'apify-aliexpress:sdk';
 
     async scrape(url: string): Promise<ShopItem> {
         const [data] = await this.runApifyAliexpress(url);
@@ -20,8 +20,10 @@ class AliexpressStrategy implements ScrapingStrategy {
         };
     }
 
-    runApifyAliexpress(url: string): Promise<any> {
-        return ApifyApi.runSyncGetDatasetItems('tugkan~aliexpress-scraper', this.createApifyAliexpressInput(url));
+    async runApifyAliexpress(url: string): Promise<any> {
+        const { defaultDatasetId } = await apifyCli.actor('tugkan/aliexpress-scraper').call(this.createApifyAliexpressInput(url));
+        const { items } = await apifyCli.dataset(defaultDatasetId).listItems();
+        return items;
     }
 
     createApifyAliexpressInput(url): object {

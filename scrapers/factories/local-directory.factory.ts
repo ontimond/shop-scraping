@@ -2,6 +2,7 @@ import { ScrapingStrategy } from "../../interfaces/scraping-strategy";
 import { ScrapingStrategyFactory } from "../../interfaces/scraping-strategy-factory";
 import AliexpressStrategy from "../strategies/aliexpress.strategy";
 import AmazonStrategy from "../strategies/amazon.strategy";
+import ScrapingBotStrategy from "../strategies/scraping-bot.strategy";
 
 type StrategyDirectory = Array<{ strategy: ScrapingStrategy; domains: string[]; }>
 
@@ -23,11 +24,9 @@ export class LocalDirectoryFactory implements ScrapingStrategyFactory {
     ];
 
     get(url: string): ScrapingStrategy {
-        const response = this.directory.find(({ domains }) => domains.some(domain => url.match(domain)))
+        const response = this.directory.find(({ domains }) => domains.some(domain => url.match(domain)));
 
-        if(!response) throw Error();
-
-        return response.strategy;
+        return response?.strategy ?? new ScrapingBotStrategy();
     }
 
 }
